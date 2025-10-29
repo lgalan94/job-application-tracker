@@ -10,14 +10,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return stored ? JSON.parse(stored) : null;
   });
 
+  const token = user?.token || null;
+
+  // ✅ Login user
   const login = async (email: string, password: string) => {
     try {
       const res = await api.post("/users/login", { email, password });
-      // ✅ Expect backend returns { token, user: { username, email, _id } }
+      // Backend expected response: { token, user: { _id, name, email } }
       const { token, user: userInfo } = res.data;
 
       const userData: User = {
-        id: userInfo._id,
+        _id: userInfo._id,
         name: userInfo.name,
         email: userInfo.email,
         token,
@@ -31,14 +34,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const register = async (username: string, email: string, password: string) => {
+  // ✅ Register new user
+  const register = async (name: string, email: string, password: string) => {
     try {
-      const res = await api.post("/users/register", { username, email, password });
-      // ✅ Expect backend returns { token, user: { username, email, _id } }
+      const res = await api.post("/users/register", { name, email, password });
       const { token, user: userInfo } = res.data;
 
       const userData: User = {
-        id: userInfo._id,
+        _id: userInfo._id,
         name: userInfo.name,
         email: userInfo.email,
         token,
@@ -52,18 +55,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // ✅ Logout user
   const logout = () => {
     setUser(null);
     localStorage.removeItem("user");
   };
 
+  // ✅ Auto-restore user session on app load
   useEffect(() => {
     const stored = localStorage.getItem("user");
     if (stored) setUser(JSON.parse(stored));
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, register }}>
+    <AuthContext.Provider value={{ user, token, login, logout, register }}>
       {children}
     </AuthContext.Provider>
   );
