@@ -1,48 +1,31 @@
 import React from 'react';
-import { PlusIcon } from './icons/PlusIcon';
-import { useAuth } from '../hooks/useAuth'; 
-
-import type { User } from '../types'; // adjust import path if needed
+import type { User } from '../types'; 
 
 interface HeaderProps {
-  onAddNew: () => void;
-  onLogout: () => void;
   user: User | null;
+  onLogout: () => void;
 }
 
-
-export const Header: React.FC<HeaderProps> = ({ onAddNew }) => {
-  const { user, logout } = useAuth(); 
-
+export const Header: React.FC<HeaderProps> = ({ user, onLogout }) => {
   return (
-    <header className="bg-white dark:bg-gray-800 shadow-md p-4 sm:p-6 flex flex-col sm:flex-row justify-between sm:items-center gap-3 sm:gap-0">
+    <header className="lg:fixed top-0 z-50 w-full bg-white dark:bg-gray-800 shadow-md px-5 py-3 flex flex-col sm:flex-row items-center sm:justify-between gap-3 text-center sm:text-left">
       {/* Left: App title */}
-      <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white tracking-tight">
-        Gemini Job Tracker
+      <h1 className="text-lg sm:text-xl font-bold uppercase text-gray-800 dark:text-white tracking-tight">
+        Job Application Tracker
       </h1>
 
-      {/* Middle: User info */}
-      {user && (
-        <div className="text-gray-700 dark:text-gray-200 text-sm sm:text-base text-center sm:text-right">
-          <p className="font-semibold">{user.name}</p>
-          <p className="text-gray-500 dark:text-gray-400">{user.email}</p>
+      {/* Right: User Info + Logout */}
+      <div className="flex flex-col sm:flex-row items-center sm:items-center gap-2 sm:gap-3">
+        <div className="flex flex-col items-center sm:items-end">
+          <h5 className="text-blue-600 uppercase">{user?.name}</h5>
+          <span className="text-xs italic text-gray-500 lowercase">
+            {user?.email}
+          </span>
         </div>
-      )}
-
-      {/* Right: Buttons */}
-      <div className="flex items-center gap-3">
-        <button
-          onClick={onAddNew}
-          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100 dark:focus:ring-offset-gray-900 transition-colors duration-200"
-        >
-          <PlusIcon className="w-5 h-5" />
-          <span className="hidden sm:inline">Add Application</span>
-          <span className="inline sm:hidden">New</span>
-        </button>
 
         <button
-          onClick={logout}
-          className="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-gray-100 dark:focus:ring-offset-gray-900 transition-colors duration-200"
+          onClick={onLogout}
+          className="px-4 py-1 text-sm bg-red-600 text-white rounded-md shadow-md hover:scale-105 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-200"
         >
           Logout
         </button>

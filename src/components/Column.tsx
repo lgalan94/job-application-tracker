@@ -42,20 +42,23 @@ export const Column: React.FC<ColumnProps> = ({
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
-      className={`rounded-xl p-4 transition-all duration-300 ${
-        isDragOver ? 'ring-2 ring-indigo-500 ring-offset-2' : ''
-      } ${bg}`}
+      className={`rounded-xl p-4 transition-all duration-300 transform
+        ${bg} 
+        ${isDragOver ? 'scale-[1.02] ring-4 ring-indigo-500 ring-offset-2 shadow-xl' : 'shadow-sm'}
+      `}
     >
       {/* Column Header */}
       <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-300 dark:border-gray-700">
         <h2 className={`font-bold text-lg ${text}`}>{status}</h2>
-        <span className={`px-3 py-1 text-sm font-semibold rounded-full ${bg} ${text}`}>
+        <span
+          className={`px-3 py-1 text-sm font-semibold rounded-full ${bg} ${text}`}
+        >
           {applications.length}
         </span>
       </div>
 
       {/* Job Cards */}
-      <div className="space-y-4 min-h-[200px]">
+      <div className="space-y-4 min-h-[200px] transition-colors duration-200">
         {applications.length > 0 ? (
           applications.map((app) => (
             <Card
@@ -65,8 +68,15 @@ export const Column: React.FC<ColumnProps> = ({
             />
           ))
         ) : (
-          <div className="flex items-center justify-center h-full text-center text-gray-500 dark:text-gray-400 p-4 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
-            <p>Drag cards here</p>
+          <div
+            className={`flex items-center justify-center h-full text-center p-4 rounded-lg border-2 border-dashed
+            ${
+              isDragOver
+                ? 'border-indigo-400 text-indigo-500 bg-indigo-50 dark:bg-indigo-950/20'
+                : 'border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400'
+            }`}
+          >
+            <p>{isDragOver ? 'Release to drop' : 'Drag cards here'}</p>
           </div>
         )}
       </div>

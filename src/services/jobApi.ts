@@ -1,5 +1,5 @@
-// src/services/jobApi.ts
-import api from "./api"; // ✅ use the shared Axios instance
+
+import api from "./api"; 
 
 export const getJobs = async () => {
   const res = await api.get("/job-applications");

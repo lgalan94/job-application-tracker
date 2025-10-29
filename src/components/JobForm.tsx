@@ -20,13 +20,16 @@ export const JobForm: React.FC<JobFormProps> = ({
     company: '',
     title: '',
     appliedDate: new Date().toISOString().split('T')[0],
-    status: 'Applied', // ✅ use string literal instead of enum
+    status: 'Applied',
     url: '',
     notes: '',
     resumeUsed: '',
     tags: [],
     user: '',
   });
+
+  const [isSaving, setIsSaving] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   useEffect(() => {
     if (application) {
@@ -41,9 +44,7 @@ export const JobForm: React.FC<JobFormProps> = ({
   }, [application]);
 
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -52,27 +53,48 @@ export const JobForm: React.FC<JobFormProps> = ({
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSaving(true);
+    setIsSuccess(false);
+
     const newApplication: JobApplication = {
-      _id: application?._id, // ✅ keep undefined for new ones
+      _id: application?._id,
       ...formData,
     };
+
+    // ⏳ Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
     onSave(newApplication);
+    setIsSaving(false);
+    setIsSuccess(true);
+
+    // ✅ Fade out success after short delay
+    setTimeout(() => setIsSuccess(false), 1500);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6 relative">
       <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-        {application ? 'Edit Job' : 'Add New Job'}
+        {application ? 'Edit Job Application' : 'Add New Job Application'}
       </h2>
 
-      {/* Company */}
+      {/* ✅ Floating "Saving..." overlay */}
+    
+
+      {/* ✅ Success animation */}
+      {isSuccess && (
+        <div className="absolute inset-0 bg-green-100/70 dark:bg-green-800/70 flex items-center justify-center rounded-lg z-10 animate-fadeIn">
+          <p className="text-green-700 dark:text-green-200 font-medium">
+            ✅ Application saved!
+          </p>
+        </div>
+      )}
+
+      {/* --- Form Fields --- */}
       <div>
-        <label
-          htmlFor="company"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-        >
+        <label htmlFor="company" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
           Company
         </label>
         <input
@@ -82,16 +104,12 @@ export const JobForm: React.FC<JobFormProps> = ({
           value={formData.company}
           onChange={handleChange}
           required
-          className="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+          className="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
         />
       </div>
 
-      {/* Title */}
       <div>
-        <label
-          htmlFor="title"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-        >
+        <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
           Job Title
         </label>
         <input
@@ -101,17 +119,13 @@ export const JobForm: React.FC<JobFormProps> = ({
           value={formData.title}
           onChange={handleChange}
           required
-          className="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm"
+          className="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border rounded-md shadow-sm"
         />
       </div>
 
-      {/* Date + Status */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div>
-          <label
-            htmlFor="appliedDate"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-          >
+          <label htmlFor="appliedDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Applied Date
           </label>
           <input
@@ -121,15 +135,12 @@ export const JobForm: React.FC<JobFormProps> = ({
             value={formData.appliedDate}
             onChange={handleChange}
             required
-            className="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm"
+            className="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border rounded-md shadow-sm"
           />
         </div>
 
         <div>
-          <label
-            htmlFor="status"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-          >
+          <label htmlFor="status" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Status
           </label>
           <select
@@ -137,23 +148,17 @@ export const JobForm: React.FC<JobFormProps> = ({
             id="status"
             value={formData.status}
             onChange={handleChange}
-            className="mt-1 block w-full pl-3 pr-10 py-2 text-base bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-md"
+            className="mt-1 block w-full pl-3 pr-10 py-2 bg-white dark:bg-gray-700 border rounded-md"
           >
             {APPLICATION_STATUSES.map((status) => (
-              <option key={status} value={status}>
-                {status}
-              </option>
+              <option key={status}>{status}</option>
             ))}
           </select>
         </div>
       </div>
 
-      {/* URL */}
       <div>
-        <label
-          htmlFor="url"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-        >
+        <label htmlFor="url" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
           Job Posting URL
         </label>
         <input
@@ -163,16 +168,12 @@ export const JobForm: React.FC<JobFormProps> = ({
           value={formData.url}
           onChange={handleChange}
           placeholder="https://..."
-          className="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm"
+          className="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border rounded-md shadow-sm"
         />
       </div>
 
-      {/* Resume Used */}
       <div>
-        <label
-          htmlFor="resumeUsed"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-        >
+        <label htmlFor="resumeUsed" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
           Resume Used
         </label>
         <input
@@ -182,16 +183,12 @@ export const JobForm: React.FC<JobFormProps> = ({
           value={formData.resumeUsed}
           onChange={handleChange}
           placeholder="e.g., Resume_V2.pdf"
-          className="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm"
+          className="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border rounded-md shadow-sm"
         />
       </div>
 
-      {/* Tags */}
       <div>
-        <label
-          htmlFor="tags"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-        >
+        <label htmlFor="tags" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
           Tags (comma separated)
         </label>
         <input
@@ -201,16 +198,12 @@ export const JobForm: React.FC<JobFormProps> = ({
           value={(formData.tags ?? []).join(', ')}
           onChange={handleChange}
           placeholder="e.g., remote, frontend, urgent"
-          className="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm"
+          className="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border rounded-md shadow-sm"
         />
       </div>
 
-      {/* Notes */}
       <div>
-        <label
-          htmlFor="notes"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-        >
+        <label htmlFor="notes" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
           Notes
         </label>
         <textarea
@@ -219,11 +212,10 @@ export const JobForm: React.FC<JobFormProps> = ({
           rows={3}
           value={formData.notes}
           onChange={handleChange}
-          className="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm"
-        ></textarea>
+          className="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border rounded-md shadow-sm"
+        />
       </div>
 
-      {/* Buttons */}
       <div className="flex justify-between items-center pt-4 border-t border-gray-200 dark:border-gray-700">
         {onDelete && (
           <button
@@ -239,15 +231,44 @@ export const JobForm: React.FC<JobFormProps> = ({
           <button
             type="button"
             onClick={onCancel}
-            className="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg shadow-sm hover:bg-gray-300 dark:hover:bg-gray-500"
+            disabled={isSaving}
+            className="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg shadow-sm hover:bg-gray-300 dark:hover:bg-gray-500 disabled:opacity-50"
           >
             Cancel
           </button>
+
           <button
             type="submit"
-            className="px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-md hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500"
+            disabled={isSaving}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-md hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 flex items-center gap-2"
           >
-            Save
+            {isSaving ? (
+              <>
+                <svg
+                  className="w-4 h-4 animate-spin text-white"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    strokeWidth="4"
+                    strokeLinecap="round"
+                    d="M4 12a8 8 0 018-8v4"
+                  ></path>
+                </svg>
+                Saving...
+              </>
+            ) : (
+              'Save'
+            )}
           </button>
         </div>
       </div>
