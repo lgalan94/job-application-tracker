@@ -9,7 +9,7 @@ export const Footer: React.FC = () => {
           <p className="text-sm font-semibold tracking-wide">
             © {new Date().getFullYear()} JA Tracker
           </p>
-          <p className="text-xs text-indigo-200">All rights reserved.</p>
+          <p className="text-xs text-indigo-600">All rights reserved.</p>
         </div>
 
         {/* Middle — Version info */}
@@ -17,7 +17,7 @@ export const Footer: React.FC = () => {
           <p className="text-sm font-medium">
             Version <span className="font-semibold ">v{__APP_VERSION__}</span>
           </p>
-          <p className="text-xs text-indigo-200">
+          <p className="text-xs text-indigo-600">
             Build: {new Date(__BUILD_DATE__).toLocaleString()}
           </p>
         </div>
