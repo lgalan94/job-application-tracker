@@ -9,10 +9,14 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ user, onLogout }) => {
   return (
     <header className="lg:fixed top-0 z-50 w-full bg-white dark:bg-gray-800 shadow-md px-5 py-3 flex flex-col sm:flex-row items-center sm:justify-between gap-3 text-center sm:text-left">
-      {/* Left: App title */}
-      <h1 className="text-lg sm:text-xl font-bold uppercase text-gray-800 dark:text-white tracking-tight">
-        Job Application Tracker
-      </h1>
+      
+      <div className='flex flex-row gap-1'>
+        <img className="w-8 h-8" src="/android-chrome-192x192.png" alt="" />
+        <h1 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-white tracking-tight">
+           Job Application Tracker
+        </h1>
+      </div>
+      
 
       {/* Right: User Info + Logout */}
       <div className="flex flex-col sm:flex-row items-center sm:items-center gap-2 sm:gap-3">
